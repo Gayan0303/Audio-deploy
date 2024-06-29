@@ -1,5 +1,4 @@
-flask==3.0.3
-jsonify==0.5
-matplotlib==3.7.5
-numpy==1.24.4
-PyAudio==0.2.14
+Flask==2.0.1
+numpy==1.21.0
+pyaudio==0.2.11
+matplotlib==3.4.2
