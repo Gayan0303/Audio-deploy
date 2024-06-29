@@ -85,4 +85,4 @@ def plot():
     return render_template('plot.html', plot_url=plot_url)
 
 if __name__ == "__main__":
-    app.run(debug=False,host='0.0.0.0')
+    app.run(debug=True)
