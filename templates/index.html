@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiometric Test</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script>
+        let currentEar = 'left';
+        let currentFreqIndex = 0;
+        const freqs = [125.0, 250.0, 500.0, 1000.0, 2000.0, 3000.0, 4000.0, 6000.0, 8000.0];
+
+        function playNextFreq() {
+            const freq = freqs[currentFreqIndex];
+            fetch('/play_freq', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ear: currentEar, freq: freq })
+            });
+        }
+
+        function submitResponse(audible) {
+            const freq = freqs[currentFreqIndex];
+            fetch('/submit_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ear: currentEar, freq: freq, audible: audible })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.volume >= 1.0 || audible) {
+                    currentFreqIndex++;
+                    if (currentFreqIndex >= freqs.length) {
+                        if (currentEar === 'left') {
+                            currentEar = 'right';
+                            currentFreqIndex = 0;
+                            document.getElementById('ear').innerText = 'Right';
+                        } else {
+                            window.location.href = '/plot';
+                            return;
+                        }
+                    }
+                }
+                playNextFreq();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            playNextFreq();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Audiometric Test</h1>
+        <p>Current Ear: <span id="ear">Left</span></p>
+        <p>Is the sound audible?</p>
+        <div class="buttons">
+            <button onclick="submitResponse(true)">Yes</button>
+            <button onclick="submitResponse(false)">No</button>
+        </div>
+    </div>
+</body>
+</html>
